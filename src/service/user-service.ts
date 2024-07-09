@@ -5,7 +5,7 @@ import { z } from "zod";
 import { hash as argon2Hash } from "argon2";
 
 export class UserService {
-  static async register(user: z.infer<typeof UserValidation.REGISTER>) {
+  static async register(user: z.infer<typeof UserValidation.register>) {
     const hashedPassword = await argon2Hash(user.password);
 
     const newUser = await prisma.user.create({

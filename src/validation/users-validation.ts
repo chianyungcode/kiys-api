@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export namespace UserValidation {
-  export const REGISTER = z
+  export const register = z
     .object({
       firstName: z.string().min(1, { message: "Minimum 1 character" }),
       lastName: z.string().min(1, { message: "Minimum 1 character" }),
@@ -27,4 +27,9 @@ export namespace UserValidation {
         path: ["confirmPassword"],
       }
     );
+
+  export const login = z.object({
+    email: z.string().email(),
+    password: z.string(),
+  });
 }

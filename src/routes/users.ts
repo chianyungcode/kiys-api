@@ -4,13 +4,22 @@ import { UserValidation } from "../validation/users-validation";
 
 import { errorResponse, successResponse } from "../utils/response";
 
-import { createJwtPayload, generateJwtToken } from "../utils/jwt-utils";
+import { createJwtPayload, generateTokens } from "../utils/jwt-utils";
 import { UserService } from "../service/user-service";
 import { verify as argon2Verify } from "argon2";
+import { prisma } from "../../prisma/client";
+import { nanoid } from "nanoid";
+import {
+  getCookie,
+  getSignedCookie,
+  setCookie,
+  setSignedCookie,
+  deleteCookie,
+} from "hono/cookie";
 
 const route = new Hono();
 
-// Create User
+// Register User
 route.post(
   "/register",
   zValidator("json", UserValidation.register),
@@ -33,21 +42,36 @@ route.post(
       }
 
       const user = await UserService.register(validatedUserData);
-      const expireTime = Math.floor(Date.now() / 1000) + 30 * 60;
-      const jwtPayload = createJwtPayload(user, expireTime);
-      const token = await generateJwtToken(jwtPayload);
 
-      const customUser = {
+      const accessTokenExpirationTime = Math.floor(Date.now() / 1000) + 1 * 60;
+      const jwtPayload = createJwtPayload(user, accessTokenExpirationTime);
+      const { accessToken, refreshToken } = await generateTokens(jwtPayload);
+
+      // Create Session
+      await prisma.session.create({
+        data: {
+          sessionToken: nanoid(),
+          accessToken,
+          refreshToken,
+          accessTokenExpires: new Date(accessTokenExpirationTime * 1000),
+          refreshTokenExpires: new Date(
+            (accessTokenExpirationTime + 7 * 24 * 60 * 60) * 1000
+          ),
+          userId: user.id,
+        },
+      });
+
+      const userData = {
         user,
         auth: {
-          accessToken: token,
+          accessToken,
+          refreshToken,
           tokenType: "Bearer",
-          expiresIn: expireTime,
         },
       };
 
-      const usersResponse = successResponse<typeof customUser>({
-        data: customUser,
+      const usersResponse = successResponse<typeof userData>({
+        data: userData,
         message: "User created",
       });
 
@@ -62,6 +86,7 @@ route.post(
 );
 
 // Login User
+// TODO Access Token harus diperbarui berdasarkan Refresh Token
 route.post("/login", zValidator("json", UserValidation.login), async (c) => {
   const validatedUserLogin = c.req.valid("json");
 
@@ -76,12 +101,12 @@ route.post("/login", zValidator("json", UserValidation.login), async (c) => {
     return c.json(userNotFoundError, 404);
   }
 
-  const isPasswordMatch = await argon2Verify(
+  const isPasswordValid = await argon2Verify(
     user.password,
     validatedUserLogin.password
   );
 
-  if (!isPasswordMatch) {
+  if (!isPasswordValid) {
     const passwordError = errorResponse({
       message: "Password is incorrect",
       errors: { password: "Password is incorrect" },
@@ -90,28 +115,44 @@ route.post("/login", zValidator("json", UserValidation.login), async (c) => {
     return c.json(passwordError, 401);
   }
 
-  const expireTime = Math.floor(Date.now() / 1000) + 30 * 60;
-  const jwtPayload = createJwtPayload(user, expireTime);
-  const token = await generateJwtToken(jwtPayload);
+  const accessTokenExpirationTime = Math.floor(Date.now() / 1000) + 30 * 60;
+  const jwtPayload = createJwtPayload(user, accessTokenExpirationTime);
+  const { accessToken, refreshToken } = await generateTokens(jwtPayload);
 
-  const customUser = {
+  const userData = {
     user: {
       id: user.id,
       email: user.email,
       name: user.firstName + " " + user.lastName,
     },
     auth: {
-      accessToken: token,
+      accessToken,
+      refreshToken,
       tokenType: "Bearer",
-      expiresIn: expireTime,
     },
   };
-  const loginResponse = successResponse<typeof customUser>({
+  const loginResponse = successResponse<typeof userData>({
     message: "Login success",
-    data: customUser,
+    data: userData,
   });
 
   return c.json(loginResponse);
+});
+
+route.post("/refresh-token", async (c) => {
+  const refreshToken = await c.req.json();
+
+  const session = await prisma.session.findUnique({
+    where: {
+      refreshToken,
+    },
+  });
+
+  // const {accessToken} = generateAccessToken(session)
+
+  // return c.json({
+  //   accessToken:
+  // })
 });
 
 export default route;

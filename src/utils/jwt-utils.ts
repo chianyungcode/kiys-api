@@ -1,5 +1,5 @@
 import { type User } from "@prisma/client";
-import { sign } from "hono/jwt";
+import { sign as jwtSign, verify as jwtVerify } from "hono/jwt";
 import { nanoid } from "nanoid";
 
 type GenerateJwtTokenType = {
@@ -18,7 +18,7 @@ export const createJwtPayload = (user: User, expireTime: number) => {
     iss: process.env.BACKEND_DEPLOYMENT_URL!,
     sub: user.id,
     aud: process.env.FRONTEND_DEPLOYMENT_URL!,
-    exp: expireTime, // Expiration set to 30 minutes
+    exp: expireTime,
     iat: Math.floor(Date.now() / 1000),
     jti: nanoid(),
     email: user.email,
@@ -28,14 +28,53 @@ export const createJwtPayload = (user: User, expireTime: number) => {
   return jwtPayload;
 };
 
-export const generateJwtToken = async (payload: GenerateJwtTokenType) => {
-  if (!process.env.JWT_SECRET_KEY) {
-    throw new Error("JWT_SECRET_KEY is missing");
+export const generateTokens = async (payload: GenerateJwtTokenType) => {
+  if (
+    !process.env.ACCESS_TOKEN_SECRET_KEY ||
+    !process.env.REFRESH_TOKEN_SECRET_KEY
+  ) {
+    throw new Error(
+      "Access token or refresh token secret key is missing. Please check your environment configuration."
+    );
   }
 
-  const token = await sign(payload, process.env.JWT_SECRET_KEY);
+  // Generate Access Token
+  const accessToken = await jwtSign(
+    payload,
+    process.env.ACCESS_TOKEN_SECRET_KEY
+  );
 
-  return token;
+  // Generate Refresh Token
+  const refreshTokenPayload = {
+    sub: payload.sub,
+    jti: payload.jti,
+    exp: payload.exp + 7 * 24 * 60 * 60,
+  };
+  const refreshToken = await jwtSign(
+    refreshTokenPayload,
+    process.env.REFRESH_TOKEN_SECRET_KEY
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+  };
 };
 
-export const verifyJwtToken = async (token: string) => {};
+// export const generateAccessToken = async (refreshToken: string) => {
+//   const payload;
+// };
+
+export const verifyJwtToken = async (token: string, secretKey: string) => {
+  try {
+    const payload = await jwtVerify(token, secretKey);
+
+    return payload;
+  } catch (error) {
+    throw new Error("Invalid Token");
+  }
+};
+
+export const refreshAccessToken = async () => {
+  const refreshToken = localStorage.getItem("refreshToken");
+};

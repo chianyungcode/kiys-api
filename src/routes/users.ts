@@ -6,7 +6,7 @@ import { errorResponse, successResponse } from "../utils/response";
 
 import { createJwtPayload, generateTokens } from "../utils/jwt-utils";
 import { UserService } from "../service/user-service";
-import { verify as argon2Verify } from "argon2";
+import { argon2id } from "../lib/oslo";
 import { prisma } from "../../prisma/client";
 import { nanoid } from "nanoid";
 import {
@@ -101,7 +101,7 @@ route.post("/login", zValidator("json", UserValidation.login), async (c) => {
     return c.json(userNotFoundError, 404);
   }
 
-  const isPasswordValid = await argon2Verify(
+  const isPasswordValid = await argon2id.verify(
     user.password,
     validatedUserLogin.password
   );

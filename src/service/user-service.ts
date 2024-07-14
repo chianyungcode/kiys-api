@@ -2,11 +2,11 @@ import { type User } from "@prisma/client";
 import { prisma } from "../../prisma/client";
 import { UserValidation } from "../validation/users-validation";
 import { z } from "zod";
-import { hash as argon2Hash } from "argon2";
+import { argon2id } from "../lib/oslo";
 
 export class UserService {
   static async register(user: z.infer<typeof UserValidation.register>) {
-    const hashedPassword = await argon2Hash(user.password);
+    const hashedPassword = await argon2id.hash(user.password);
 
     const newUser = await prisma.user.create({
       data: {

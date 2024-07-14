@@ -17,7 +17,7 @@ Full documentation for products API specification
 | ----------- | ----------- | ------ | -------- |
 | `X-API-KEY` | API key     | string | `Yes`    |
 
-## Create Category
+## Create Product
 
 Endpoint:
 
@@ -29,8 +29,14 @@ POST /api/products
 
 ```json
 {
-  "name": "Surfing",
-  "description": "Aktivitas menyenangkan di pantai dengan menunggangi ombak"
+  "name": "Kiys Mechanical Keyboard",
+  "slug": "kiys-mechanical-keyboard",
+  "sku": "123456789",
+  "description": "Kiys Mechanical Keyboard",
+  "price": 10000,
+  "isArchived": false,
+  "isFeatured": false,
+  "categoryId": "40739dc7-726e-4b8a-babe-6a0e51f36ce6"
 }
 ```
 
@@ -41,12 +47,19 @@ POST /api/products
   "code": 200,
   "message": "success",
   "data": {
-    "id": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
-    "name": "Surfing",
-    "description": "Aktivitas menyenangkan di pantai dengan menunggangi ombak",
-    "createdAt": "2022-12-31T23:59:59Z",
-    "updatedAt": "2022-12-31T23:59:59Z",
-    "destinations": []
+    "name": "Kiys Mechanical Keyboard",
+    "slug": "kiys-mechanical-keyboard",
+    "sku": "123456789",
+    "description": "Kiys Mechanical Keyboard",
+    "price": 10000,
+    "isArchived": false,
+    "isFeatured": false,
+    "categoryId": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
+    "createdAt": "2023-01-02T00:00:00.000Z",
+    "updatedAt": "2023-01-02T00:00:00.000Z",
+    "images": [],
+    "orderItems": [],
+    "reviews": []
   }
 }
 ```
@@ -55,11 +68,11 @@ POST /api/products
 
 ```json
 {
-  "errors": "name is required"
+  "errors": "Name is required"
 }
 ```
 
-## Get Category
+## Get Product
 
 Endpoint:
 
@@ -75,11 +88,19 @@ GET /api/products/:id
   "message": "success",
   "data": {
     "id": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
-    "name": "Surfing",
-    "description": "Aktivitas menyenangkan di pantai dengan menunggangi ombak",
-    "createdAt": "2022-12-31T23:59:59Z",
-    "updatedAt": "2022-12-31T23:59:59Z",
-    "destinations": []
+    "name": "Kiys Mechanical Keyboard",
+    "slug": "kiys-mechanical-keyboard",
+    "sku": "123456789",
+    "description": "Kiys Mechanical Keyboard",
+    "price": 10000,
+    "isArchived": false,
+    "isFeatured": false,
+    "categoryId": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
+    "createdAt": "2023-01-02T00:00:00.000Z",
+    "updatedAt": "2023-01-02T00:00:00.000Z",
+    "images": [],
+    "orderItems": [],
+    "reviews": []
   }
 }
 ```
@@ -88,11 +109,11 @@ GET /api/products/:id
 
 ```json
 {
-  "errors": "data not found"
+  "errors": "Data not found"
 }
 ```
 
-## Get Categories
+## Get Products
 
 Endpoint:
 
@@ -109,19 +130,35 @@ GET /api/products
   "data": [
     {
       "id": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
-      "name": "Surfing",
-      "description": "Aktivitas menyenangkan di pantai dengan menunggangi ombak",
-      "createdAt": "2022-12-31T23:59:59Z",
-      "updatedAt": "2022-12-31T23:59:59Z",
-      "destinations": []
+      "name": "Kiys Mechanical Keyboard",
+      "slug": "kiys-mechanical-keyboard",
+      "sku": "123456789",
+      "description": "Kiys Mechanical Keyboard",
+      "price": 10000,
+      "isArchived": false,
+      "isFeatured": false,
+      "categoryId": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
+      "createdAt": "2023-01-02T00:00:00.000Z",
+      "updatedAt": "2023-01-02T00:00:00.000Z",
+      "images": [],
+      "orderItems": [],
+      "reviews": []
     },
     {
-      "id": "50739dc7-726e-4b8a-babe-6a0e51f36ce6",
-      "name": "Diving",
-      "description": "Menyelam di dasar laut untuk menikmati keindahan bawah air",
-      "createdAt": "2022-12-31T23:59:59Z",
-      "updatedAt": "2022-12-31T23:59:59Z",
-      "destinations": []
+      "id": "50739dc7-726e-4b8a-babe-dada51f36ce6",
+      "name": "Kiys Mechanical Keyboard S-Pro",
+      "slug": "kiys-mechanical-keyboard-s-pro",
+      "sku": "311321312",
+      "description": "Kiys Mechanical Keyboard S-Pro",
+      "price": 40000,
+      "isArchived": false,
+      "isFeatured": true,
+      "categoryId": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
+      "createdAt": "2024-03-02T00:00:00.000Z",
+      "updatedAt": "2024-03-02T00:00:00.000Z",
+      "images": [],
+      "orderItems": [],
+      "reviews": []
     }
   ]
 }
@@ -135,7 +172,7 @@ GET /api/products
 }
 ```
 
-## Delete Category
+## Delete Product
 
 Endpoint:
 
@@ -147,7 +184,7 @@ DELETE /api/products/:id
 
 ```json
 {
-  "message": "Category deleted"
+  "message": "Product deleted"
 }
 ```
 
@@ -155,11 +192,11 @@ DELETE /api/products/:id
 
 ```json
 {
-  "errors": "Failed to delete products"
+  "errors": "Failed to delete product"
 }
 ```
 
-## Delete Categories
+## Delete Products
 
 Endpoint:
 
@@ -171,7 +208,7 @@ DELETE /api/products
 
 ```json
 {
-  "message": "All products deleted"
+  "message": "All product deleted"
 }
 ```
 
@@ -179,11 +216,11 @@ DELETE /api/products
 
 ```json
 {
-  "message": "Failed to delete all products"
+  "message": "Failed to delete all product"
 }
 ```
 
-## Update Category
+## Update Product
 
 Endpoint:
 
@@ -191,12 +228,17 @@ Endpoint:
 PUT /api/products/:id
 ```
 
-### Request body (Success)
+### Request body
 
 ```json
 {
-  "name": "Hiking",
-  "description": "Aktivitas menyenangkan di pegunungan"
+  "name": "Kiys Mechanical Keyboard S-Pro",
+  "slug": "kiys-mechanical-keyboard-s-pro",
+  "sku": "311321312",
+  "description": "Kiys Mechanical Keyboard S-Pro",
+  "price": 500000,
+  "isArchived": false,
+  "isFeatured": true
 }
 ```
 
@@ -208,11 +250,19 @@ PUT /api/products/:id
   "message": "success",
   "data": {
     "id": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
-    "name": "Surfing",
-    "description": "Aktivitas menyenangkan di pantai dengan menunggangi ombak",
-    "createdAt": "2022-12-31T23:59:59Z",
-    "updatedAt": "2022-12-31T23:59:59Z",
-    "destinations": []
+    "name": "Kiys Mechanical Keyboard",
+    "slug": "kiys-mechanical-keyboard",
+    "sku": "123456789",
+    "description": "Kiys Mechanical Keyboard",
+    "price": 10000,
+    "isArchived": false,
+    "isFeatured": false,
+    "categoryId": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
+    "createdAt": "2023-01-02T00:00:00.000Z",
+    "updatedAt": "2023-01-02T00:00:00.000Z",
+    "images": [],
+    "orderItems": [],
+    "reviews": []
   }
 }
 ```
@@ -221,6 +271,6 @@ PUT /api/products/:id
 
 ```json
 {
-  "errors": "Failed to update products"
+  "errors": "Failed to update product"
 }
 ```

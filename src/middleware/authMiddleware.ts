@@ -7,14 +7,16 @@ const factory = createFactory();
 // Middleware for protected route, examples create products, delete products etc
 export const authMiddleware = factory.createMiddleware(async (c, next) => {
   const authenticationHeader = c.req.header("Authorization");
-  const token = authenticationHeader && authenticationHeader.split(" ")[1];
+  const accessToken =
+    authenticationHeader && authenticationHeader.split(" ")[1];
 
-  if (!token) {
+  if (!accessToken) {
     return c.json(
       errorResponse({
-        errors: "accessToken not found",
-        message: "Access Token is required",
-      })
+        errors: "unauthorized",
+        message: "Unauthorized",
+      }),
+      401
     );
   }
 
@@ -22,12 +24,29 @@ export const authMiddleware = factory.createMiddleware(async (c, next) => {
     throw new Error("ACCESS_TOKEN_SECRET_KEY is missing");
   }
 
-  const payload = await verifyJwtToken(
-    token,
-    process.env.ACCESS_TOKEN_SECRET_KEY
-  );
-
-  c.set("users", payload);
+  try {
+    const payload = await verifyJwtToken(
+      accessToken,
+      process.env.ACCESS_TOKEN_SECRET_KEY
+    );
+    if (!payload) {
+      return c.json(
+        errorResponse({
+          errors: "invalid_access_token",
+          message: "Invalid access token",
+        }),
+        401
+      );
+    }
+  } catch (error) {
+    return c.json(
+      errorResponse({
+        errors: "token_verification_failed",
+        message: "Token verification failed",
+      }),
+      401
+    );
+  }
 
   await next();
 });

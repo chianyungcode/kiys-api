@@ -2,144 +2,13 @@
 
 Full documentation for user API specification
 
-| Endpoint             | HTTP     | Description          |
-| -------------------- | -------- | -------------------- |
-| `/api/auth/register` | `POST`   | Register new user    |
-| `/api/auth/login`    | `POST`   | Login user           |
-| `/api/auth/refresh`  | `POST`   | Refresh access token |
-| `/api/users`         | `GET`    | Get all users        |
-| `/api/users/:id`     | `GET`    | Get specific user    |
-| `/api/users`         | `PUT`    | Update user          |
-| `/api/users`         | `DELETE` | Delete all user      |
-| `/api/users/:id`     | `DELETE` | Delete user by id    |
-
-## Register User
-
-Endpoint:
-
-```http request
-POST /api/auth/register
-```
-
-### Request body
-
-```json
-{
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john.doe@example.com",
-  "address": "123 Main St, Anytown, USA",
-  "password": "password123"
-}
-```
-
-### Response body (Success)
-
-```json
-{
-  "code": 200,
-  "message": "success",
-  "data": {
-    "user": {
-      "id": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
-      "firstName": "John",
-      "lastName": "Doe",
-      "email": "john.doe@example.com",
-      "password": "password123",
-      "address": "123 Main St, Anytown, USA",
-      "createdAt": "2023-01-02T00:00:00.000Z",
-      "updatedAt": "2023-01-02T00:00:00.000Z",
-      "role": "USER"
-    },
-    "auth": {
-      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SARsBE5x_ua2ye823r2zKpQNaew3Daq8riKz5A4h3o4",
-      "refreshToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.vqb33-7FqzFWPNlr0ElW1v2RjJRZBel3CdDHBWD7y_o",
-      "tokenType": "Bearer"
-    }
-  }
-}
-```
-
-### Response body (Failed)
-
-```json
-{
-  "errors": "Email is required"
-}
-```
-
-## Login User
-
-Endpoint:
-
-```http request
-POST /api/auth/login
-```
-
-### Request body
-
-```json
-{
-  "email": "john.doe@example.com",
-  "password": "password123"
-}
-```
-
-### Response body (Success)
-
-```json
-{
-  "code": 200,
-  "message": "success",
-  "data": {
-    "auth": {
-      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SARsBE5x_ua2ye823r2zKpQNaew3Daq8riKz5A4h3o4",
-      "refreshToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.vqb33-7FqzFWPNlr0ElW1v2RjJRZBel3CdDHBWD7y_o",
-      "tokenType": "Bearer"
-    }
-  }
-}
-```
-
-## Refresh Access Token
-
-Endpoint:
-
-```http request
-POST /api/auth/refresh
-```
-
-### Request body
-
-```json
-{
-  "refreshToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.vqb33-7FqzFWPNlr0ElW1v2RjJRZBel3CdDHBWD7y_o"
-}
-```
-
-### Response body (Success)
-
-```json
-{
-  "code": 200,
-  "message": "success",
-  "data": {
-    "auth": {
-      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SARsBE5x_ua2ye823r2zKpQNaew3Daq8riKz5A4h3o4",
-      "refreshToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.vqb33-7FqzFWPNlr0ElW1v2RjJRZBel3CdDHBWD7y_o",
-      "tokenType": "Bearer"
-    }
-  }
-}
-```
-
-### Response body (Failed)
-
-```json
-{
-  "errors": "Refresh token is required"
-}
-```
+| Endpoint         | HTTP     | Description       |
+| ---------------- | -------- | ----------------- |
+| `/api/users`     | `GET`    | Get all users     |
+| `/api/users/:id` | `GET`    | Get specific user |
+| `/api/users`     | `PUT`    | Update user       |
+| `/api/users`     | `DELETE` | Delete all user   |
+| `/api/users/:id` | `DELETE` | Delete user by id |
 
 ## Get All Users
 
@@ -149,44 +18,41 @@ Endpoint:
 GET /api/users
 ```
 
-### Response body (Success)
+### Response Body (Success)
 
 ```json
 {
-  "code": 200,
-  "message": "success",
+  "success": true,
+  "message": "Users fetched successfully",
   "data": [
     {
       "id": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
       "firstName": "John",
       "lastName": "Doe",
       "email": "john.doe@example.com",
-      "password": "password123",
-      "address": "123 Main St, Anytown, USA",
-      "createdAt": "2023-01-02T00:00:00.000Z",
-      "updatedAt": "2023-01-02T00:00:00.000Z",
-      "role": "USER"
+      "role": "admin",
+      "createdAt": "2021-01-01T00:00:00Z",
+      "updatedAt": "2021-01-01T00:00:00Z"
     },
     {
-      "id": "50739dc7-726e-4b8a-babe-6a0e51f36ce6",
+      "id": "9876543-210-abcd-efgh-ijklmnopqrst",
       "firstName": "Jane",
-      "lastName": "Doe",
-      "email": "jane.doe@example.com",
-      "password": "password123",
-      "address": "123 Main St, Anytown, USA",
-      "createdAt": "2023-01-02T00:00:00.000Z",
-      "updatedAt": "2023-01-02T00:00:00.000Z",
-      "role": "USER"
+      "lastName": "Smith",
+      "email": "jane.smith@example.com",
+      "role": "user",
+      "createdAt": "2022-03-15T12:30:00Z",
+      "updatedAt": "2022-03-15T12:30:00Z"
     }
   ]
 }
 ```
 
-### Response body (Failed)
+### Response Body (Failed)
 
 ```json
 {
-  "errors": "Failed to get data"
+  "success": false,
+  "message": "Failed to fetch users"
 }
 ```
 
@@ -198,77 +64,77 @@ Endpoint:
 GET /api/users/:id
 ```
 
-### Response body (Success)
+### Response Body (Success)
 
 ```json
 {
-  "code": 200,
-  "message": "success",
+  "success": true,
+  "message": "User fetched successfully",
   "data": {
     "id": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
     "firstName": "John",
     "lastName": "Doe",
     "email": "john.doe@example.com",
-    "password": "password123",
-    "address": "123 Main St, Anytown, USA",
-    "createdAt": "2023-01-02T00:00:00.000Z",
-    "updatedAt": "2023-01-02T00:00:00.000Z",
-    "role": "USER"
+    "address": "Jl. T.B Simatupang, Jakarta",
+    "role": "admin",
+    "createdAt": "2021-01-01T00:00:00Z",
+    "updatedAt": "2021-01-01T00:00:00Z"
   }
 }
 ```
 
-### Response body (Failed)
+### Response Body (Failed)
 
 ```json
 {
-  "errors": "Data not found"
+  "success": false,
+  "message": "Failed to fetch user"
 }
 ```
 
 ## Update User
 
+Endpoint:
+
 ```http request
 PUT /api/users/:id
 ```
 
-### Request body
+### Request Body
 
 ```json
 {
   "firstName": "John",
   "lastName": "Doe",
-  "email": "john.doe@example.com",
-  "address": "123 Main St, Anytown, USA",
-  "password": "password123"
+  "email": "johndoe13@example.com",
+  "address": "Jl. T.B Simatupang, Jakarta"
 }
 ```
 
-### Response body (Success)
+### Response Body (Success)
 
 ```json
 {
-  "code": 200,
-  "message": "success",
+  "success": true,
+  "message": "User updated successfully",
   "data": {
     "id": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
     "firstName": "John",
     "lastName": "Doe",
-    "email": "john.doe@example.com",
-    "password": "password123",
-    "address": "123 Main St, Anytown, USA",
-    "createdAt": "2023-01-02T00:00:00.000Z",
-    "updatedAt": "2023-01-02T00:00:00.000Z",
-    "role": "USER"
+    "email": "johndoe13@example.com",
+    "address": "Jl. T.B Simatupang, Jakarta",
+    "createdAt": "2024-07-13T12:30:00Z",
+    "updatedAt": "2024-07-16T12:30:00Z"
   }
 }
 ```
 
-### Response body (Failed)
+### Response Body (Failed)
 
 ```json
 {
-  "errors": "Failed to update user"
+  "success": false,
+  "message": "Failed to update user"
 }
 ```
 
@@ -277,26 +143,28 @@ PUT /api/users/:id
 Endpoint:
 
 ```http request
-DELETE /api/users/:id
+DElETE /api/users/:id
 ```
 
-### Response body (Success)
+### Response Body (Success)
 
 ```json
 {
-  "message": "User deleted"
+  "success": true,
+  "message": "User deleted successfully"
 }
 ```
 
-### Response body (Failed)
+### Response Body (Failed)
 
 ```json
 {
-  "errors": "Failed to delete user"
+  "success": false,
+  "message": "Failed to delete user"
 }
 ```
 
-## Delete Users
+## Delete All Users
 
 Endpoint:
 
@@ -304,18 +172,20 @@ Endpoint:
 DELETE /api/users
 ```
 
-### Response body (Success)
+### Response Body (Success)
 
 ```json
 {
-  "message": "All user deleted"
+  "success": true,
+  "message": "All users deleted successfully"
 }
 ```
 
-### Response body (Failed)
+### Response Body (Failed)
 
 ```json
 {
-  "message": "Failed to delete all user"
+  "success": false,
+  "message": "Failed to delete all users"
 }
 ```

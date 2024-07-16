@@ -39,7 +39,7 @@ POST /api/categories
 
 ```json
 {
-  "code": 200,
+  "success": true,
   "message": "success",
   "data": {
     "id": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
@@ -57,7 +57,8 @@ POST /api/categories
 
 ```json
 {
-  "errors": "Name is required"
+  "success": false,
+  "message": "Failed to create category"
 }
 ```
 
@@ -73,8 +74,8 @@ GET /api/categories/:id
 
 ```json
 {
-  "code": 200,
-  "message": "success",
+  "success": true,
+  "message": "Category found",
   "data": {
     "id": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
     "name": "Keyboard",
@@ -91,7 +92,8 @@ GET /api/categories/:id
 
 ```json
 {
-  "errors": "Data not found"
+  "success": false,
+  "message": "Category not found"
 }
 ```
 
@@ -107,8 +109,8 @@ GET /api/categories
 
 ```json
 {
-  "code": 200,
-  "message": "success",
+  "success": true,
+  "message": "Categories fetched successfully",
   "data": [
     {
       "id": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
@@ -136,7 +138,9 @@ GET /api/categories
 
 ```json
 {
-  "errors": "Failed to get data"
+  "success": false,
+  "message": "Failed to fetch categories",
+  "errors": "Data not found"
 }
 ```
 
@@ -152,6 +156,7 @@ DELETE /api/categories/:id
 
 ```json
 {
+  "success": true,
   "message": "Category deleted"
 }
 ```
@@ -160,6 +165,8 @@ DELETE /api/categories/:id
 
 ```json
 {
+  "success": false,
+  "mesage": "Failed to delete category",
   "errors": "Failed to delete category"
 }
 ```
@@ -176,6 +183,7 @@ DELETE /api/categories
 
 ```json
 {
+  "success": true,
   "message": "All category deleted"
 }
 ```
@@ -184,7 +192,9 @@ DELETE /api/categories
 
 ```json
 {
-  "message": "Failed to delete all category"
+  "success": false,
+  "mesage": "Failed to delete all category",
+  "errors": "Failed to delete all category"
 }
 ```
 
@@ -210,8 +220,8 @@ PUT /api/categories/:id
 
 ```json
 {
-  "code": 200,
-  "message": "success",
+  "success": true,
+  "message": "Category have been updated",
   "data": {
     "id": "40739dc7-726e-4b8a-babe-6a0e51f36ce6",
     "name": "Surfing",
@@ -227,6 +237,8 @@ PUT /api/categories/:id
 
 ```json
 {
+  "success": false,
+  "mesage": "Failed to update category",
   "errors": "Failed to update category"
 }
 ```

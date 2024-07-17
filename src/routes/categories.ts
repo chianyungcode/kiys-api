@@ -137,3 +137,5 @@ route.delete("/", async (c) => {
     );
   }
 });
+
+export default route;

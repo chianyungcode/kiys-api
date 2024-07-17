@@ -6,7 +6,7 @@ interface Pagination {
 }
 
 interface SuccessResponse<T> {
-  data: T;
+  data?: T;
   message: string;
   pagination?: Pagination;
 }
@@ -31,8 +31,8 @@ export const successResponse = <T>({
 
 export const errorResponse = ({ errors, message }: ErrorResponse) => {
   return {
-    errors,
     success: false,
+    errors,
     message,
   };
 };

@@ -1,158 +1,138 @@
-import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { UserValidation } from "../validation/users-validation";
-
-import { errorResponse, successResponse } from "../utils/response";
-
-import { createJwtPayload, generateTokens } from "../utils/jwt-utils";
 import { UserService } from "../service/user-service";
-import { argon2id } from "../lib/oslo";
-import { prisma } from "../../prisma/client";
-import { nanoid } from "nanoid";
-import {
-  getCookie,
-  getSignedCookie,
-  setCookie,
-  setSignedCookie,
-  deleteCookie,
-} from "hono/cookie";
+import { errorResponse, successResponse } from "../utils/response";
+import { User } from "@prisma/client";
+import { zValidator } from "@hono/zod-validator";
+import { UserValidation } from "../validation/user-validation";
 
 const route = new Hono();
 
-// Register User
-route.post(
-  "/register",
-  zValidator("json", UserValidation.register),
+// Get all users
+// TODO Disini harus ada pengecekan bahwa user yang mengakses ini harus admin
+// TODO Tambahkan ketika user yang dicari tidak ada harus ada balikkan apa
+route.get("/", zValidator("query", UserValidation.queryParam), async (c) => {
+  try {
+    const { page, limit } = c.req.valid("query");
+
+    const users = await UserService.getAllUsers({ page, limit });
+    const totalData = await UserService.getUsersCount();
+
+    const userResponse = successResponse<User[]>({
+      message: "Users fetched successfully",
+      data: users,
+      pagination: {
+        totalData,
+        page,
+        limit,
+        totalPages: Math.ceil(totalData / limit),
+      },
+    });
+
+    return c.json(userResponse);
+  } catch (error) {
+    console.error(error);
+    return c.json(
+      errorResponse({
+        errors: "failed to fetch users",
+        message: "Failed to fetch users",
+      })
+    );
+  }
+});
+
+// Get spesific users
+route.get("/:id", zValidator("param", UserValidation.paramId), async (c) => {
+  try {
+    const { id } = c.req.valid("param");
+
+    const user = await UserService.getUser(id);
+
+    if (!user) {
+      return c.json("User not found");
+    }
+
+    const userResponse = successResponse<User>({
+      message: "User fetched successfully",
+      data: user,
+    });
+
+    return c.json(userResponse);
+  } catch (error) {
+    console.error(error);
+    return c.json(
+      errorResponse({
+        errors: "failed to fetch users",
+        message: "Failed to fetch users",
+      })
+    );
+  }
+});
+
+// Update user
+route.put(
+  "/:id",
+  zValidator("param", UserValidation.paramId),
+  zValidator("json", UserValidation.update),
   async (c) => {
     try {
+      const { id } = c.req.valid("param");
       const validatedUserData = c.req.valid("json");
 
-      // Check if user exist
-      const userExists = await UserService.findUserByEmail(
-        validatedUserData.email
-      );
-      if (userExists) {
-        const userExistsError = errorResponse({
-          message: "User already exists",
-          errors: {
-            email: "Email already used",
-          },
-        });
-        return c.json(userExistsError, 409);
-      }
+      const updatedUser = await UserService.update(id, validatedUserData);
 
-      const user = await UserService.register(validatedUserData);
-
-      const accessTokenExpirationTime = Math.floor(Date.now() / 1000) + 1 * 60;
-      const jwtPayload = createJwtPayload(user, accessTokenExpirationTime);
-      const { accessToken, refreshToken } = await generateTokens(jwtPayload);
-
-      // Create Session
-      await prisma.session.create({
-        data: {
-          sessionToken: nanoid(),
-          accessToken,
-          refreshToken,
-          accessTokenExpires: new Date(accessTokenExpirationTime * 1000),
-          refreshTokenExpires: new Date(
-            (accessTokenExpirationTime + 7 * 24 * 60 * 60) * 1000
-          ),
-          userId: user.id,
-        },
+      const userResponse = successResponse<User>({
+        message: "Success update the data",
+        data: updatedUser,
       });
 
-      const userData = {
-        user,
-        auth: {
-          accessToken,
-          refreshToken,
-          tokenType: "Bearer",
-        },
-      };
-
-      const usersResponse = successResponse<typeof userData>({
-        data: userData,
-        message: "User created",
-      });
-
-      return c.json(usersResponse, 201);
+      return c.json(userResponse);
     } catch (error) {
+      console.error(error);
       return c.json(
-        errorResponse({ message: "Internal server error", errors: error }),
-        500
+        errorResponse({
+          errors: "Failed to update data",
+          message: "Failed to update data",
+        })
       );
     }
   }
 );
 
-// Login User
-// TODO Access Token harus diperbarui berdasarkan Refresh Token
-route.post("/login", zValidator("json", UserValidation.login), async (c) => {
-  const validatedUserLogin = c.req.valid("json");
+// Delete User
+route.delete("/:id", zValidator("param", UserValidation.paramId), async (c) => {
+  try {
+    const { id } = c.req.valid("param");
 
-  const user = await UserService.findUserByEmail(validatedUserLogin.email);
-  if (!user) {
-    const userNotFoundError = errorResponse({
-      message: "User not found",
-      errors: {
-        email: "User with this email not found",
-      },
-    });
-    return c.json(userNotFoundError, 404);
-  }
+    await UserService.delete(id);
 
-  const isPasswordValid = await argon2id.verify(
-    user.password,
-    validatedUserLogin.password
-  );
-
-  if (!isPasswordValid) {
-    const passwordError = errorResponse({
-      message: "Password is incorrect",
-      errors: { password: "Password is incorrect" },
+    const userResponse = await successResponse({
+      message: "User deleted",
     });
 
-    return c.json(passwordError, 401);
+    return c.json(userResponse);
+  } catch (error) {
+    console.error(error);
+    return c.json(
+      errorResponse({
+        errors: "Failed to delete data",
+        message: "Failed to delete data",
+      })
+    );
   }
-
-  const accessTokenExpirationTime = Math.floor(Date.now() / 1000) + 30 * 60;
-  const jwtPayload = createJwtPayload(user, accessTokenExpirationTime);
-  const { accessToken, refreshToken } = await generateTokens(jwtPayload);
-
-  const userData = {
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.firstName + " " + user.lastName,
-    },
-    auth: {
-      accessToken,
-      refreshToken,
-      tokenType: "Bearer",
-    },
-  };
-  const loginResponse = successResponse<typeof userData>({
-    message: "Login success",
-    data: userData,
-  });
-
-  return c.json(loginResponse);
 });
 
-route.post("/refresh-token", async (c) => {
-  const refreshToken = await c.req.json();
-
-  const session = await prisma.session.findUnique({
-    where: {
-      refreshToken,
-    },
-  });
-
-  // const {accessToken} = generateAccessToken(session)
-
-  // return c.json({
-  //   accessToken:
-  // })
+// Delete Users
+route.delete("/", async (c) => {
+  try {
+    await UserService.deleteAll();
+  } catch (error) {
+    return c.json(
+      errorResponse({
+        errors: "Failed to delete all users",
+        message: "Failed to delete all users",
+      })
+    );
+  }
 });
 
 export default route;

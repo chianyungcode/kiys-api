@@ -1,0 +1,324 @@
+[
+  {
+    "schemaName": "public",
+    "tableName": "categories",
+    "predictions": [
+      {
+        "input": "public categories description",
+        "column": "description",
+        "shape": "COMMERCE_PRODUCT_DESCRIPTION",
+        "confidence": 0.8587998747825623,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public categories id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9859743714332581,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public categories name",
+        "column": "name",
+        "shape": "COMMERCE_PRODUCT",
+        "confidence": 0.7693310379981995,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public categories slug",
+        "column": "slug",
+        "shape": "DATABASE_COLUMN",
+        "confidence": 0.5746144652366638,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "images",
+    "predictions": [
+      {
+        "input": "public images id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9988394379615784,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public images url",
+        "column": "url",
+        "shape": "IMAGE_URL",
+        "confidence": 0.9256063103675842,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "order_items",
+    "predictions": [
+      {
+        "input": "public order_items id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9981926083564758,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "orders",
+    "predictions": [
+      {
+        "input": "public orders id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9989456534385681,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "password_reset_tokens",
+    "predictions": [
+      {
+        "input": "public password_reset_tokens id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9241701364517212,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public password_reset_tokens token",
+        "column": "token",
+        "shape": "TOKEN",
+        "confidence": 0.9976239800453186,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "products",
+    "predictions": [
+      {
+        "input": "public products description",
+        "column": "description",
+        "shape": "COMMERCE_PRODUCT_DESCRIPTION",
+        "confidence": 0.8767876625061035,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public products id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9853469133377075,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public products name",
+        "column": "name",
+        "shape": "COMMERCE_PRODUCT_NAME",
+        "confidence": 0.9182306528091431,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public products sku",
+        "column": "sku",
+        "shape": "COMMERCE_PRODUCT",
+        "confidence": 0.8996768593788147,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public products slug",
+        "column": "slug",
+        "shape": "URL_SLUG",
+        "confidence": 0.9136161804199219,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "refresh_tokens",
+    "predictions": [
+      {
+        "input": "public refresh_tokens id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.978659451007843,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public refresh_tokens token",
+        "column": "token",
+        "shape": "TOKEN",
+        "confidence": 0.9945922493934631,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "reviews",
+    "predictions": [
+      {
+        "input": "public reviews comment",
+        "column": "comment",
+        "shape": "POST_COMMENT",
+        "confidence": 0.5156654119491577,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public reviews id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9983957409858704,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public reviews title",
+        "column": "title",
+        "shape": "POST_TITLE",
+        "confidence": 0.7829251885414124,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "sessions",
+    "predictions": [
+      {
+        "input": "public sessions id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.98589026927948,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public sessions ip_address",
+        "column": "ipAddress",
+        "shape": "INTERNET_IPV4",
+        "confidence": 0.9980815649032593,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public sessions user_agent",
+        "column": "userAgent",
+        "shape": "USER_AGENT",
+        "confidence": 0.9969025254249573,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "users",
+    "predictions": [
+      {
+        "input": "public users address",
+        "column": "address",
+        "shape": "FULL_ADDRESS",
+        "confidence": 0.9913021326065063,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public users email",
+        "column": "email",
+        "shape": "EMAIL",
+        "confidence": 0.9942367076873779,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public users first_name",
+        "column": "firstName",
+        "shape": "PERSON_FIRST_NAME",
+        "confidence": 0.9893118739128113,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public users id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9862675666809082,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public users last_name",
+        "column": "lastName",
+        "shape": "PERSON_LAST_NAME",
+        "confidence": 0.991211473941803,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public users password",
+        "column": "password",
+        "shape": "PASSWORD",
+        "confidence": 0.9364579916000366,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "verification_tokens",
+    "predictions": [
+      {
+        "input": "public verification_tokens id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9863420128822327,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public verification_tokens identifier",
+        "column": "identifier",
+        "shape": "UUID",
+        "confidence": 0.883309543132782,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public verification_tokens token",
+        "column": "token",
+        "shape": "TOKEN",
+        "confidence": 0.9786388874053955,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  }
+]

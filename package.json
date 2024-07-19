@@ -1,9 +1,11 @@
 {
-  "name": "kiys-backend",
+  "name": "kiys-api",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "start": "bun run src/index.ts",
-    "db:migrate:dev": "prisma migrate dev"
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "snaplet:sync": "bunx @snaplet/seed sync"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.614.0",
@@ -16,7 +18,16 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@snaplet/copycat": "^5.0.0",
+    "@snaplet/seed": "0.97.20",
     "@types/bun": "latest",
+    "tsx": "^4.16.2",
     "wrangler": "^3.65.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed/seed.ts"
+  },
+  "@snaplet/seed": {
+    "config": "prisma/seed/seed.config.ts"
   }
 }

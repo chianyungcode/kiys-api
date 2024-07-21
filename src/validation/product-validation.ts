@@ -31,8 +31,8 @@ export namespace ProductValidation {
   });
 
   export const queryParam = z.object({
-    page: z.number().default(1),
-    limit: z.number().default(10),
+    page: z.string().default("1"),
+    limit: z.string().default("10"),
   });
 
   export const paramId = z.object({

@@ -75,11 +75,17 @@ export namespace ProductService {
     page,
     limit,
   }: z.infer<typeof ProductValidation.queryParam>) => {
+    const pageNumber = Number.parseInt(page, 10);
+    const limitNumber = Number.parseInt(limit, 10);
+
     const products = await prisma.product.findMany({
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: (pageNumber - 1) * limitNumber,
+      take: limitNumber,
       orderBy: {
         createdAt: "desc",
+      },
+      include: {
+        images: true,
       },
     });
 

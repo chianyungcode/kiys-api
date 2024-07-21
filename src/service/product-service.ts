@@ -47,6 +47,21 @@ export namespace ProductService {
     return updatedProduct;
   };
 
+  export const imageUpload = async (productId: string, urls: string[]) => {
+    const images = await Promise.all(
+      urls.map((imageUrl) =>
+        prisma.image.create({
+          data: {
+            productId,
+            url: imageUrl,
+          },
+        })
+      )
+    );
+
+    return images;
+  };
+
   export const getProduct = async (productId: string) => {
     const product = await prisma.product.findUniqueOrThrow({
       where: {

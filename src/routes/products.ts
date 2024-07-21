@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-import { authMiddleware } from "../middleware/authMiddleware";
 import { zValidator } from "@hono/zod-validator";
 import { ProductValidation } from "../validation/product-validation";
 import { ProductService } from "../service/product-service";
@@ -8,7 +7,7 @@ import { Product } from "@prisma/client";
 import { uploadWithR2 } from "../lib/cloudflare-r2";
 
 const route = new Hono();
-route.use(authMiddleware);
+// route.use(authMiddleware);
 
 // Create product
 route.post("/", zValidator("json", ProductValidation.create), async (c) => {
@@ -175,22 +174,45 @@ route.delete("/", async (c) => {
 
 // Image upload product
 route.post(
-  "/:productId/images",
+  "/:productId/upload",
   zValidator("param", ProductValidation.paramId),
-
   async (c) => {
     try {
       const { productId } = c.req.valid("param");
-      const body = await c.req.parseBody();
+      const formData = await c.req.parseBody({ all: true });
 
-      const file = body["fileName"];
+      const uploadedFiles = formData["fileName"];
 
-      if (!(file instanceof File)) {
-        return c.json({ message: "File not found" }, 400);
+      if (typeof uploadedFiles === "string" || !Array.isArray(uploadedFiles)) {
+        throw new Error("Invalid format: Expected array of files");
       }
 
-      const imageData = await uploadWithR2(file, productId);
-    } catch (error) {}
+      const uploadedImagesData = await uploadWithR2(
+        uploadedFiles as File[],
+        productId
+      );
+
+      const updatedProduct = await ProductService.imageUpload(
+        productId,
+        uploadedImagesData
+      );
+
+      const uploadResponse = successResponse({
+        message: "Upload successfully",
+        data: updatedProduct,
+      });
+
+      return c.json(uploadResponse);
+    } catch (error) {
+      console.error(error);
+
+      return c.json(
+        errorResponse({
+          errors: "Failed to upload image",
+          message: "Failed to upload image",
+        })
+      );
+    }
   }
 );
 

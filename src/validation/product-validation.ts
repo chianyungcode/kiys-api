@@ -1,6 +1,9 @@
 import { z } from "zod";
 
 export namespace ProductValidation {
+  const MAX_FILE_SIZE = 1024 * 1024 * 5;
+  const ACCEPTED_IMAGE_TYPES = ["jpeg", "jpg", "png", "webp"];
+
   export const create = z.object({
     name: z.string().min(1, { message: "Minimum 1 character" }),
     slug: z.string().toLowerCase(),
@@ -14,10 +17,18 @@ export namespace ProductValidation {
 
   export const update = ProductValidation.create;
 
-  // export const images = z.object({
-  //   url: z.string().url(),
-  //   productId: z.string().uuid(),
-  // });
+  export const image = z.object({
+    image: z
+      .any()
+      .refine(
+        (file) => file?.size <= MAX_FILE_SIZE,
+        `Maximum file size is 5MB.`
+      )
+      .refine(
+        (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type.split("/")[1]),
+        "Only accept .jpg, .jpeg, .png and .webp."
+      ),
+  });
 
   export const queryParam = z.object({
     page: z.number().default(1),

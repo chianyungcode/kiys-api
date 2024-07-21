@@ -6,9 +6,15 @@ Full documentation for user API specification
 | ---------------- | -------- | ----------------- |
 | `/api/users`     | `GET`    | Get all users     |
 | `/api/users/:id` | `GET`    | Get specific user |
-| `/api/users`     | `PUT`    | Update user       |
+| `/api/users/:id` | `PUT`    | Update user       |
 | `/api/users`     | `DELETE` | Delete all user   |
 | `/api/users/:id` | `DELETE` | Delete user by id |
+
+## Authentication Header
+
+| Parameter       | Description  | Type   | Required |
+| --------------- | ------------ | ------ | -------- |
+| `Authorization` | Bearer token | string | `Yes`    |
 
 ## Get All Users
 

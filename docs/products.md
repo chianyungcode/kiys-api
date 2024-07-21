@@ -11,6 +11,12 @@ Full documentation for products API specification
 | `/api/products/:id` | `DELETE` | Delete products by id |
 | `/api/products/:id` | `PUT`    | Update products by id |
 
+## Authentication Header
+
+| Parameter       | Description  | Type   | Required |
+| --------------- | ------------ | ------ | -------- |
+| `Authorization` | Bearer token | string | `Yes`    |
+
 ## Create Product
 
 Endpoint:

@@ -1,1 +1,8 @@
 node_modules/
+
+# Environment Variable
+.env
+.env.local
+.env.production
+
+prisma/seed/*

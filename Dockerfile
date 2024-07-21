@@ -1,6 +1,5 @@
-FROM --platform=amd64 oven/bun:latest
+FROM oven/bun:debian
 
-# Change architecture to base image oven/bun if you want to push to docker hub
 # --platform=amd64
 
 WORKDIR /usr/src/app
@@ -8,5 +7,8 @@ WORKDIR /usr/src/app
 COPY . .
 
 RUN bun install
+
+RUN bun prisma generate
+
 
 CMD ["bun", "run", "start"]

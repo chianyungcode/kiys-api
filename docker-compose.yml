@@ -22,7 +22,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - my-wander-kiys
+      - my-kiys-network
 
 volumes:
   postgres-data:

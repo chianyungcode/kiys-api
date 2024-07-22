@@ -1,14 +1,9 @@
-FROM oven/bun:debian
+FROM --platform=amd64 oven/bun:latest
 
-# --platform=amd64
-
-WORKDIR /usr/src/app
+WORKDIR /src/usr/app
 
 COPY . .
 
 RUN bun install
 
-RUN bun prisma generate
-
-
-CMD ["bun", "run", "start"]
+CMD [ "bun", "start" ]

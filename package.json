@@ -11,7 +11,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.614.0",
     "@hono/zod-validator": "^0.2.2",
-    "@prisma/client": "^5.17.0",
+    "@prisma/client": "5.15.0",
     "hono": "^4.4.12",
     "nanoid": "^5.0.7",
     "oslo": "^1.2.1",
@@ -21,7 +21,7 @@
     "@snaplet/copycat": "^5.0.0",
     "@snaplet/seed": "0.97.20",
     "@types/bun": "latest",
-    "prisma": "^5.17.0",
+    "prisma": "5.15.0",
     "tsx": "^4.16.2",
     "wrangler": "^3.65.0"
   },

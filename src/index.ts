@@ -6,10 +6,11 @@ import auth from "./routes/auth";
 import categories from "./routes/categories";
 import products from "./routes/products";
 
-const app = new Hono().basePath("/api");
+const app = new Hono();
+
 app.use(logger());
 app.use(
-  "*",
+  "api/*",
   cors({
     origin: ["http://localhost:5173"],
     allowHeaders: ["X-Custom-Header", "Upgrade-Insecure-Requests"],
@@ -21,14 +22,12 @@ app.use(
 );
 
 app.get("/", (c) => {
-  console.log(process.env.DATABASE_URL);
-
   return c.text("Hello Hono! ");
 });
 
-app.route("/auth", auth);
-app.route("/categories", categories);
-app.route("/products", products);
+app.route("api/auth", auth);
+app.route("api/categories", categories);
+app.route("api/products", products);
 
 export default {
   port: process.env.APP_PORT || "3000",

@@ -38,4 +38,8 @@ export namespace ProductValidation {
   export const paramId = z.object({
     productId: z.string().uuid(),
   });
+
+  export const paramSlug = z.object({
+    productSlug: z.string().toLowerCase(),
+  });
 }

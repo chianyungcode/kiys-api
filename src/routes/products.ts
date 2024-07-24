@@ -59,15 +59,25 @@ route.get("/", zValidator("query", ProductValidation.queryParam), async (c) => {
   }
 });
 
-// Get product by id
+// Get product by slug
 route.get(
-  "/:productId",
-  zValidator("param", ProductValidation.paramId),
+  "/:productSlug",
+  zValidator("param", ProductValidation.paramSlug),
   async (c) => {
     try {
-      const { productId } = c.req.valid("param");
+      const { productSlug } = c.req.valid("param");
 
-      const product = await ProductService.getProduct(productId);
+      const product = await ProductService.getProductBySlug(productSlug);
+
+      if (!product) {
+        return c.json(
+          errorResponse({
+            errors: "Product not found",
+            message: "Product not found",
+          }),
+          404
+        );
+      }
 
       const productResponse = successResponse<Product>({
         message: "Product found",

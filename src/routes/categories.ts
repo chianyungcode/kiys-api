@@ -30,11 +30,11 @@ route.post("/", zValidator("json", CategoryValidation.create), async (c) => {
 // Get all category
 route.get("/", async (c) => {
   try {
-    const categories = await CategoryService.getProducts();
+    const categories = await CategoryService.getCategories();
 
     const categoryResponse = successResponse<Category[]>({
       data: categories,
-      message: "success",
+      message: "Fetched all categories",
     });
 
     return c.json(categoryResponse);
@@ -45,15 +45,15 @@ route.get("/", async (c) => {
   }
 });
 
-// Get category by id
+// Get category by slug
 route.get(
-  "/:categoryId",
-  zValidator("param", CategoryValidation.paramId),
+  "/:categorySlug",
+  zValidator("param", CategoryValidation.paramSlug),
   async (c) => {
     try {
-      const { categoryId } = c.req.valid("param");
+      const { categorySlug } = c.req.valid("param");
 
-      const category = await CategoryService.getProduct(categoryId);
+      const category = await CategoryService.getCategory(categorySlug);
 
       const categoryResponse = successResponse<Category>({
         data: category,
@@ -106,7 +106,7 @@ route.delete(
     try {
       const { categoryId } = await c.req.valid("param");
 
-      await CategoryService.deleteProduct(categoryId);
+      await CategoryService.deleteCategory(categoryId);
 
       const categoryResponse = successResponse({
         message: "Category deleted",
@@ -124,7 +124,7 @@ route.delete(
 // Delete all category
 route.delete("/", async (c) => {
   try {
-    await CategoryService.deleteProducts();
+    await CategoryService.deleteAllCategories();
 
     const categoryResponse = successResponse({
       message: "All category delete",

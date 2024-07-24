@@ -19,39 +19,20 @@ export class CategoryService {
     return newCategory;
   }
 
-  static async getProducts() {
-    const categories = await prisma.category.findMany();
+  static async getCategories() {
+    const categories = await prisma.category.findMany({
+      include: {
+        products: true,
+      },
+    });
 
     return categories;
   }
 
-  //   static async getProduct(id: string) {
-  //     try {
-  //       const category = await prisma.category.findUniqueOrThrow({
-  //         where: {
-  //           id,
-  //         },
-  //       });
-
-  //       return category;
-  //     } catch (error: any) {
-  //       if (
-  //         error instanceof Prisma.PrismaClientKnownRequestError &&
-  //         error.code === "P2025"
-  //       ) {
-  //         return "Category not found";
-  //       } else {
-  //         throw new Error(
-  //           `An error occurred while fetching the category: ${error.message}`
-  //         );
-  //       }
-  //     }
-  //   }
-
-  static async getProduct(id: string) {
+  static async getCategory(slug: string) {
     const category = await prisma.category.findUniqueOrThrow({
       where: {
-        id,
+        slug,
       },
     });
 
@@ -70,7 +51,7 @@ export class CategoryService {
     return category;
   }
 
-  static async deleteProduct(id: string) {
+  static async deleteCategory(id: string) {
     await prisma.category.delete({
       where: {
         id,
@@ -78,7 +59,7 @@ export class CategoryService {
     });
   }
 
-  static async deleteProducts() {
+  static async deleteAllCategories() {
     await prisma.category.deleteMany();
   }
 }

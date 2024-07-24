@@ -12,7 +12,7 @@ app.use(logger());
 app.use(
   "api/*",
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "https://kiys.chianyung.dev"],
     allowHeaders: ["X-Custom-Header", "Upgrade-Insecure-Requests"],
     allowMethods: ["POST", "GET", "PUT", "DELETE"],
     exposeHeaders: ["Content-Length", "X-Kuma-Revision"],

@@ -26,7 +26,6 @@ import {
 const route = new Hono();
 
 // Register User
-// ! Still have error in this endpoint need to FIX
 route.post(
   "/register",
   zValidator("json", UserValidation.register),
@@ -50,15 +49,13 @@ route.post(
 
       const user = await UserService.register(validatedUserData);
 
+      // Token expiration time
       const accessTokenExpirationTime =
         Math.floor(Date.now() / 1000) +
-        60 * parseInt(process.env.ACCESS_TOKEN_EXPIRATION_MINUTE || "15"); // Default 15 Minute
+        60 * Number(process.env.ACCESS_TOKEN_EXPIRATION_MINUTE || "15"); // Default 15 Minute
       const refreshTokenExpirationTime =
         Math.floor(Date.now() / 1000) +
-        60 *
-          60 *
-          24 *
-          parseInt(process.env.REFRESH_TOKEN_EXPIRATION_DAY || "30"); // Default 30 days
+        60 * 60 * 24 * Number(process.env.REFRESH_TOKEN_EXPIRATION_DAY || "30"); // Default 30 days
 
       // Create payload
       const accessTokenPayload = createJwtPayload(
@@ -83,13 +80,14 @@ route.post(
       });
 
       // Create Session
+      // TODO: Cari cara bagaimana mengakses ip address dengan hono framework, meskipun sebenarnya ini sudah betul dalam kebanyakan kasus memang ip address dibawah pada header request
       await prisma.session.create({
         data: {
-          sessionToken: nanoid(),
-          accessToken,
-          refreshToken,
-          accessTokenExpires: new Date(accessTokenExpirationTime * 1000),
-          refreshTokenExpires: new Date(refreshTokenExpirationTime * 1000),
+          ipAddress:
+            c.req.header("X-Forwarded-For") ||
+            c.req.header("Remote-Addr") ||
+            "",
+          userAgent: c.req.header("User-Agent") || "",
           userId: user.id,
         },
       });
@@ -97,7 +95,7 @@ route.post(
       const userData = {
         user,
         auth: {
-          accessToken,
+          token: accessToken,
           tokenType: "Bearer",
         },
       };
@@ -109,6 +107,7 @@ route.post(
 
       return c.json(usersResponse, 201);
     } catch (error) {
+      console.error("Error during registration:", error);
       return c.json(
         errorResponse({ message: "Internal server error", errors: error }),
         500
@@ -120,6 +119,7 @@ route.post(
 // Login User
 route.post("/login", zValidator("json", UserValidation.login), async (c) => {
   const validatedUserLogin = c.req.valid("json");
+  console.log(process.env.NODE_ENV);
 
   const user = await UserService.findUserByEmail(validatedUserLogin.email);
   if (!user) {
@@ -148,10 +148,10 @@ route.post("/login", zValidator("json", UserValidation.login), async (c) => {
 
   const accessTokenExpirationTime =
     Math.floor(Date.now() / 1000) +
-    60 * parseInt(process.env.ACCESS_TOKEN_EXPIRATION_MINUTE || "15"); // Default 15 Minute
+    60 * Number(process.env.ACCESS_TOKEN_EXPIRATION_MINUTE || "15"); // Default 15 Minute
   const refreshTokenExpirationTime =
     Math.floor(Date.now() / 1000) +
-    60 * 60 * 24 * parseInt(process.env.REFRESH_TOKEN_EXPIRATION_DAY || "30"); // Default 30 days
+    60 * 60 * 24 * Number(process.env.REFRESH_TOKEN_EXPIRATION_DAY || "30"); // Default 30 days
 
   // Create payload
   const accessTokenPayload = createJwtPayload(user, accessTokenExpirationTime);
@@ -167,7 +167,7 @@ route.post("/login", zValidator("json", UserValidation.login), async (c) => {
   // Set cookie from server
   setCookie(c, "refresh-token", refreshToken, {
     path: "/",
-    secure: true,
+    secure: process.env.NODE_ENV === "development" ? false : true,
     httpOnly: true,
     expires: new Date(refreshTokenExpirationTime * 1000), // Set cookie expiration to match refresh token expiration
     sameSite: "Strict",
@@ -192,27 +192,31 @@ route.post("/login", zValidator("json", UserValidation.login), async (c) => {
   return c.json(loginResponse);
 });
 
-// Refresh Token Endpoint
-route.post("/refresh-token", async (c) => {
-  const refreshToken = getCookie(c, "refresh-token");
+// How to get new access token with refresh token
 
-  if (!refreshToken) {
+route.post("/refresh", async (c) => {
+  if (!process.env.REFRESH_TOKEN_SECRET_KEY) {
+    console.error("REFRESH_TOKEN_SECRET_KEY is missing");
     return c.json(
       errorResponse({
-        message: "Access Denied. No Refresh Token provided",
-        errors: { token: "Missing refresh token" },
+        message: "Internal server error",
+        errors: { server: "Server configuration error" },
       }),
-      401
+      500
     );
   }
 
-  if (!process.env.REFRESH_TOKEN_SECRET_KEY) {
-    throw new Error("REFRESH_TOKEN_SECRET_KEY is missing");
-  }
-
   try {
-    if (typeof refreshToken !== "string") {
-      throw new Error("Invalid refresh token format");
+    const refreshToken = getCookie(c, "refresh-token");
+
+    if (!refreshToken) {
+      return c.json(
+        errorResponse({
+          message: "Access Denied. No Refresh Token provided",
+          errors: { token: "Missing refresh token" },
+        }),
+        401
+      );
     }
 
     const payload = (await verifyJwtToken(
@@ -220,23 +224,21 @@ route.post("/refresh-token", async (c) => {
       process.env.REFRESH_TOKEN_SECRET_KEY
     )) as RefreshTokenPayloadType;
 
-    const accessTokenExpirationTime =
-      Math.floor(Date.now() / 1000) +
-      60 * parseInt(process.env.ACCESS_TOKEN_EXPIRATION_MINUTE!);
-
     const user = await UserService.findUserByEmail(payload.email);
 
     if (!user) {
       return c.json(
         errorResponse({
           message: "User not found",
-          errors: {
-            email: "User with this email not found",
-          },
+          errors: { email: "User associated with this token not found" },
         }),
-        401
+        404
       );
     }
+
+    const accessTokenExpirationTime =
+      Math.floor(Date.now() / 1000) +
+      60 * Number(process.env.ACCESS_TOKEN_EXPIRATION_MINUTE || "15");
 
     const newAccessTokenPayload = createJwtPayload(
       user,
@@ -245,15 +247,16 @@ route.post("/refresh-token", async (c) => {
 
     const accessToken = await generateAccessToken(newAccessTokenPayload);
 
-    const refreshTokenResponse = successResponse({
-      message: "Token refreshed successfully",
-      data: {
-        accessToken,
-        tokenType: "Bearer",
-      },
-    });
-
-    return c.json(refreshTokenResponse);
+    return c.json(
+      successResponse({
+        message: "Token refreshed successfully",
+        data: {
+          token: accessToken,
+          tokenType: "Bearer",
+          expiresIn: accessTokenExpirationTime - Math.floor(Date.now() / 1000),
+        },
+      })
+    );
   } catch (error) {
     console.error("Error refreshing token:", error);
     return c.json(

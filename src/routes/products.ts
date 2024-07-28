@@ -5,9 +5,10 @@ import { ProductService } from "../service/product-service";
 import { errorResponse, successResponse } from "../utils/response";
 import { Product } from "@prisma/client";
 import { uploadWithR2 } from "../lib/cloudflare-r2";
+import { authMiddleware } from "../middleware/authMiddleware";
 
 const route = new Hono();
-// route.use(authMiddleware);
+route.use(authMiddleware);
 
 // Create product
 route.post("/", zValidator("json", ProductValidation.create), async (c) => {

@@ -4,8 +4,10 @@ import { CategoryService } from "../service/category-service";
 import { errorResponse, successResponse } from "../utils/response";
 import { Category } from "@prisma/client";
 import { CategoryValidation } from "../validation/category-validation";
+import { authMiddleware } from "../middleware/authMiddleware";
 
 const route = new Hono();
+route.use(authMiddleware);
 
 // Create categories
 route.post("/", zValidator("json", CategoryValidation.create), async (c) => {

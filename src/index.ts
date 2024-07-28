@@ -22,10 +22,14 @@ app.use(
 );
 
 app.get("/", (c) => {
-  return c.text("Hello Hono! ");
+  return c.json({
+    endpoint: {
+      docs: "https://apidog.com/apidoc/shared-e07763a2-ce23-4c65-84bf-21a23da59f53",
+    },
+  });
 });
 
-app.route("api/auth", auth);
+app.route("/api/auth", auth);
 app.route("api/categories", categories);
 app.route("api/products", products);
 

@@ -25,24 +25,12 @@ export const authMiddleware = factory.createMiddleware(async (c, next) => {
   }
 
   try {
-    const payload = await verifyJwtToken(
-      accessToken,
-      process.env.ACCESS_TOKEN_SECRET_KEY
-    );
-    if (!payload) {
-      return c.json(
-        errorResponse({
-          errors: "invalid_access_token",
-          message: "Invalid access token",
-        }),
-        401
-      );
-    }
+    await verifyJwtToken(accessToken, process.env.ACCESS_TOKEN_SECRET_KEY);
   } catch (error) {
     return c.json(
       errorResponse({
-        errors: "token_verification_failed",
-        message: "Token verification failed",
+        errors: "invalid_access_token",
+        message: "Invalid access token",
       }),
       401
     );

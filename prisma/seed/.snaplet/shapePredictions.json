@@ -111,6 +111,20 @@
   },
   {
     "schemaName": "public",
+    "tableName": "product_variants",
+    "predictions": [
+      {
+        "input": "public product_variants id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9980687499046326,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
     "tableName": "products",
     "predictions": [
       {
@@ -239,6 +253,20 @@
   },
   {
     "schemaName": "public",
+    "tableName": "stocks",
+    "predictions": [
+      {
+        "input": "public stocks id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9979523420333862,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
     "tableName": "users",
     "predictions": [
       {
@@ -286,6 +314,50 @@
         "column": "password",
         "shape": "PASSWORD",
         "confidence": 0.9364579916000366,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "variant_options",
+    "predictions": [
+      {
+        "input": "public variant_options id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9978123903274536,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public variant_options value",
+        "column": "value",
+        "shape": "COMMERCE_PRODUCT_DESCRIPTION",
+        "confidence": 0.3172114491462708,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "variants",
+    "predictions": [
+      {
+        "input": "public variants id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9986951947212219,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public variants name",
+        "column": "name",
+        "shape": "COMPANY_NAME",
+        "confidence": 0.6615081429481506,
         "context": "GENERAL",
         "confidenceContext": 0
       }

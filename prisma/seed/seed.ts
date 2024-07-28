@@ -19,7 +19,7 @@ const main = async () => {
         copycat.oneOf(ctx.seed, ["Keyboard", "Mouse", "TWS", "Headphones"]),
       slug: (ctx) => ctx.data.name?.toLowerCase() || "",
       products: (createMany) =>
-        createMany(1, {
+        createMany(7, {
           price: ({ seed }) => copycat.int(seed, { min: 500000, max: 2000000 }),
           slug: (ctx) =>
             ctx.data.name
@@ -38,6 +38,8 @@ const main = async () => {
         }),
     })
   );
+
+  await seed.productVariant((createMany) => createMany(2));
 
   // Type completion not working? You might want to reload your TypeScript Server to pick up the changes
 

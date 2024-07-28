@@ -16,7 +16,7 @@ export namespace UserValidation {
           }
         ),
       confirmPassword: z.string().min(8),
-      address: z.string().optional(),
+      address: z.string(),
     })
     .refine(
       (values) => {

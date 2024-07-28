@@ -11,5 +11,9 @@ export namespace CategoryValidation {
     categoryId: z.string().uuid(),
   });
 
+  export const paramSlug = z.object({
+    categorySlug: z.string().toLowerCase(),
+  });
+
   export const update = CategoryValidation.create;
 }

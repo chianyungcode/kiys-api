@@ -73,6 +73,7 @@ export namespace ProductService {
   };
 
   // TODO: Disini harusnya bisa findUnique karena field slug unique pada prisma schema. Ada keanehan
+  // TODO: Query product detail
   export const getProductBySlug = async (productSlug: string) => {
     const product = await prisma.product.findFirst({
       where: {
@@ -81,6 +82,15 @@ export namespace ProductService {
       include: {
         images: true,
         category: true,
+        productVariant: {
+          include: {
+            variantOption: {
+              include: {
+                variant: true,
+              },
+            },
+          },
+        },
       },
     });
 

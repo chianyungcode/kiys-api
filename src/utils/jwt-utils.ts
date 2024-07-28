@@ -50,9 +50,9 @@ export const generateRefreshToken = (payload: RefreshTokenPayloadType) => {
   return refreshToken;
 };
 
-export const verifyJwtToken = async (token: string, secretKey: string) => {
+export const verifyJwtToken = (token: string, secretKey: string) => {
   try {
-    const payload = await jwtVerify(token, secretKey);
+    const payload = jwtVerify(token, secretKey);
 
     return payload;
   } catch (error) {

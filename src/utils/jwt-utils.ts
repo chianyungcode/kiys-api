@@ -30,22 +30,30 @@ export const createJwtPayload = (user: User, expireTime: number) => {
   return jwtPayload;
 };
 
-export const generateAccessToken = (payload: AccessTokenPayloadType) => {
+export const generateAccessToken = async (payload: AccessTokenPayloadType) => {
   if (!process.env.ACCESS_TOKEN_SECRET_KEY) {
     throw new Error("Access token secret key is missing");
   }
 
-  const accessToken = jwtSign(payload, process.env.ACCESS_TOKEN_SECRET_KEY);
+  const accessToken = await jwtSign(
+    payload,
+    process.env.ACCESS_TOKEN_SECRET_KEY
+  );
 
   return accessToken;
 };
 
-export const generateRefreshToken = (payload: RefreshTokenPayloadType) => {
+export const generateRefreshToken = async (
+  payload: RefreshTokenPayloadType
+) => {
   if (!process.env.REFRESH_TOKEN_SECRET_KEY) {
     throw new Error("Refresh token secret key is missing");
   }
 
-  const refreshToken = jwtSign(payload, process.env.REFRESH_TOKEN_SECRET_KEY);
+  const refreshToken = await jwtSign(
+    payload,
+    process.env.REFRESH_TOKEN_SECRET_KEY
+  );
 
   return refreshToken;
 };

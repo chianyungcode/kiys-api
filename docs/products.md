@@ -1,6 +1,6 @@
 # Product API Documentation
 
-Full documentation for products API specification
+Full documentation for product API specification
 
 | Endpoint            | HTTP     | Description           |
 | ------------------- | -------- | --------------------- |

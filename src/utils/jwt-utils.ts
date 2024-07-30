@@ -1,68 +1,62 @@
 import { type User } from "@prisma/client";
-import { sign as jwtSign, verify as jwtVerify } from "hono/jwt";
-import { nanoid } from "nanoid";
 
-export type AccessTokenPayloadType = {
-  iss: string;
-  sub: string;
-  aud: string;
-  exp: number;
-  iat: number;
-  jti: string;
-  email: string;
-  roles: string;
-};
+import { createJWT, validateJWT } from "oslo/jwt";
+import { TimeSpan } from "oslo";
 
-export type RefreshTokenPayloadType = AccessTokenPayloadType;
+// Oslo
 
-export const createJwtPayload = (user: User, expireTime: number) => {
-  const jwtPayload = {
-    iss: process.env.BACKEND_DEPLOYMENT_URL!,
-    sub: user.id,
-    aud: process.env.FRONTEND_DEPLOYMENT_URL!,
-    exp: expireTime,
-    iat: Math.floor(Date.now() / 1000),
-    jti: nanoid(),
+const secretAccessToken = process.env.ACCESS_TOKEN_SECRET_KEY;
+const secretRefreshToken = process.env.REFRESH_TOKEN_SECRET_KEY;
+
+const secretAccessTokenBuffer = new TextEncoder().encode(secretAccessToken);
+const secretRefreshTokenBuffer = new TextEncoder().encode(secretRefreshToken);
+
+export const generateAccessToken = async (user: User) => {
+  const extendedPayloadClaims = {
     email: user.email,
-    roles: user.role.toLowerCase(),
+    role: user.role,
   };
 
-  return jwtPayload;
-};
-
-export const generateAccessToken = async (payload: AccessTokenPayloadType) => {
-  if (!process.env.ACCESS_TOKEN_SECRET_KEY) {
-    throw new Error("Access token secret key is missing");
-  }
-
-  const accessToken = await jwtSign(
-    payload,
-    process.env.ACCESS_TOKEN_SECRET_KEY
+  const accessToken = await createJWT(
+    "HS256",
+    secretAccessTokenBuffer,
+    extendedPayloadClaims,
+    {
+      expiresIn: new TimeSpan(15, "m"),
+      issuer: process.env.BACKEND_DEPLOYMENT_URL,
+      subject: user.id,
+      audiences: [process.env.FRONTEND_DEPLOYMENT_URL || ""],
+      includeIssuedTimestamp: true,
+      notBefore: new Date(),
+    }
   );
 
   return accessToken;
 };
-
-export const generateRefreshToken = async (
-  payload: RefreshTokenPayloadType
-) => {
-  if (!process.env.REFRESH_TOKEN_SECRET_KEY) {
-    throw new Error("Refresh token secret key is missing");
-  }
-
-  const refreshToken = await jwtSign(
-    payload,
-    process.env.REFRESH_TOKEN_SECRET_KEY
+export const generateRefreshToken = async (user: User) => {
+  const refreshToken = await createJWT(
+    "HS256",
+    secretRefreshTokenBuffer,
+    {},
+    {
+      expiresIn: new TimeSpan(30, "d"),
+      issuer: process.env.BACKEND_DEPLOYMENT_URL,
+      subject: user.id,
+      audiences: [process.env.FRONTEND_DEPLOYMENT_URL || ""],
+      includeIssuedTimestamp: true,
+      notBefore: new Date(),
+    }
   );
 
   return refreshToken;
 };
 
-export const verifyJwtToken = (token: string, secretKey: string) => {
+export const verifyJwtToken = (token: string, secret: string) => {
   try {
-    const payload = jwtVerify(token, secretKey);
+    const secretBuffer = new TextEncoder().encode(secret);
+    const decodedToken = validateJWT("HS256", secretBuffer, token);
 
-    return payload;
+    return decodedToken;
   } catch (error) {
     throw new Error("Invalid Token");
   }

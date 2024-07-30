@@ -4,24 +4,14 @@ import { UserService } from "../service/user-service";
 import { zValidator } from "@hono/zod-validator";
 import { UserValidation } from "../validation/user-validation";
 import {
-  AccessTokenPayloadType,
-  RefreshTokenPayloadType,
-  createJwtPayload,
   generateAccessToken,
   generateRefreshToken,
   verifyJwtToken,
 } from "../utils/jwt-utils";
-import { nanoid } from "nanoid";
 import { prisma } from "../../prisma/client";
 import { argon2id } from "../lib/oslo";
 
-import {
-  getCookie,
-  getSignedCookie,
-  setCookie,
-  setSignedCookie,
-  deleteCookie,
-} from "hono/cookie";
+import { getCookie, setCookie } from "hono/cookie";
 
 const route = new Hono();
 
@@ -49,38 +39,20 @@ route.post(
 
       const user = await UserService.register(validatedUserData);
 
-      // Token expiration time
-      const accessTokenExpirationTime =
-        Math.floor(Date.now() / 1000) +
-        60 * Number(process.env.ACCESS_TOKEN_EXPIRATION_MINUTE || "15"); // Default 15 Minute
-      const refreshTokenExpirationTime =
-        Math.floor(Date.now() / 1000) +
-        60 * 60 * 24 * Number(process.env.REFRESH_TOKEN_EXPIRATION_DAY || "30"); // Default 30 days
-
-      // Create payload
-      const accessTokenPayload = createJwtPayload(
-        user,
-        accessTokenExpirationTime
-      );
-      const refreshTokenPayload = createJwtPayload(
-        user,
-        refreshTokenExpirationTime
-      );
-
       // Generate tokens
-      const accessToken = await generateAccessToken(accessTokenPayload);
-      const refreshToken = await generateRefreshToken(refreshTokenPayload);
+      const accessToken = await generateAccessToken(user);
+      const refreshToken = await generateRefreshToken(user);
 
-      setCookie(c, "refresh-token", refreshToken, {
+      setCookie(c, "refreshToken", refreshToken, {
         path: "/",
         secure: true,
         httpOnly: true,
-        expires: new Date(refreshTokenExpirationTime * 1000), // Set cookie expiration to match refresh token expiration
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Set cookie expiration to 30 days
         sameSite: "Strict",
       });
 
       // Create Session
-      // TODO: Cari cara bagaimana mengakses ip address dengan hono framework, meskipun sebenarnya ini sudah betul dalam kebanyakan kasus memang ip address dibawah pada header request
+      // TODO: get ip address from http request header cloudflare
       await prisma.session.create({
         data: {
           ipAddress:
@@ -95,7 +67,7 @@ route.post(
       const userData = {
         user,
         auth: {
-          token: accessToken,
+          accessToken: accessToken,
           tokenType: "Bearer",
         },
       };
@@ -119,7 +91,6 @@ route.post(
 // Login User
 route.post("/login", zValidator("json", UserValidation.login), async (c) => {
   const validatedUserLogin = c.req.valid("json");
-  console.log(process.env.NODE_ENV);
 
   const user = await UserService.findUserByEmail(validatedUserLogin.email);
   if (!user) {
@@ -146,31 +117,17 @@ route.post("/login", zValidator("json", UserValidation.login), async (c) => {
     return c.json(passwordError, 401);
   }
 
-  const accessTokenExpirationTime =
-    Math.floor(Date.now() / 1000) +
-    60 * Number(process.env.ACCESS_TOKEN_EXPIRATION_MINUTE || "15"); // Default 15 Minute
-  const refreshTokenExpirationTime =
-    Math.floor(Date.now() / 1000) +
-    60 * 60 * 24 * Number(process.env.REFRESH_TOKEN_EXPIRATION_DAY || "30"); // Default 30 days
-
-  // Create payload
-  const accessTokenPayload = createJwtPayload(user, accessTokenExpirationTime);
-  const refreshTokenPayload = createJwtPayload(
-    user,
-    refreshTokenExpirationTime
-  );
-
   // Generate tokens
-  const accessToken = await generateAccessToken(accessTokenPayload);
-  const refreshToken = await generateRefreshToken(refreshTokenPayload);
+  const accessToken = await generateAccessToken(user);
+  const refreshToken = await generateRefreshToken(user);
 
   // Set cookie from server
-  setCookie(c, "refresh-token", refreshToken, {
+  setCookie(c, "refreshToken", refreshToken, {
     path: "/",
-    secure: process.env.NODE_ENV === "development" ? false : true,
+    // secure: process.env.NODE_ENV === "development" ? false : true,
     httpOnly: true,
-    expires: new Date(refreshTokenExpirationTime * 1000), // Set cookie expiration to match refresh token expiration
-    sameSite: "Strict",
+    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Set cookie expiration to 30 days
+    // sameSite: "Strict",
   });
 
   const userData = {
@@ -193,8 +150,7 @@ route.post("/login", zValidator("json", UserValidation.login), async (c) => {
 });
 
 // How to get new access token with refresh token
-
-route.post("/refresh", async (c) => {
+route.post("/refresh/token", async (c) => {
   if (!process.env.REFRESH_TOKEN_SECRET_KEY) {
     console.error("REFRESH_TOKEN_SECRET_KEY is missing");
     return c.json(
@@ -207,7 +163,7 @@ route.post("/refresh", async (c) => {
   }
 
   try {
-    const refreshToken = getCookie(c, "refresh-token");
+    const refreshToken = getCookie(c, "refreshToken");
 
     if (!refreshToken) {
       return c.json(
@@ -219,12 +175,12 @@ route.post("/refresh", async (c) => {
       );
     }
 
-    const payload = (await verifyJwtToken(
+    const decodedRefreshToken = await verifyJwtToken(
       refreshToken,
-      process.env.REFRESH_TOKEN_SECRET_KEY
-    )) as RefreshTokenPayloadType;
+      process.env.REFRESH_TOKEN_SECRET_KEY!
+    );
 
-    const user = await UserService.findUserByEmail(payload.email);
+    const user = await UserService.getUser(decodedRefreshToken.subject!);
 
     if (!user) {
       return c.json(
@@ -236,24 +192,14 @@ route.post("/refresh", async (c) => {
       );
     }
 
-    const accessTokenExpirationTime =
-      Math.floor(Date.now() / 1000) +
-      60 * Number(process.env.ACCESS_TOKEN_EXPIRATION_MINUTE || "15");
-
-    const newAccessTokenPayload = createJwtPayload(
-      user,
-      accessTokenExpirationTime
-    );
-
-    const accessToken = await generateAccessToken(newAccessTokenPayload);
+    const newAccessToken = await generateAccessToken(user);
 
     return c.json(
       successResponse({
         message: "Token refreshed successfully",
         data: {
-          token: accessToken,
+          accessToken: newAccessToken,
           tokenType: "Bearer",
-          expiresIn: accessTokenExpirationTime - Math.floor(Date.now() / 1000),
         },
       })
     );

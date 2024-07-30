@@ -13,7 +13,11 @@ app.use(
   "api/*",
   cors({
     origin: ["http://localhost:5173", "https://kiys.chianyung.dev"],
-    allowHeaders: ["Content-Type", "Upgrade-Insecure-Requests"],
+    allowHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Upgrade-Insecure-Requests",
+    ],
     allowMethods: ["POST", "GET", "PUT", "DELETE"],
     exposeHeaders: ["Content-Type", "X-Kuma-Revision"],
     maxAge: 600,

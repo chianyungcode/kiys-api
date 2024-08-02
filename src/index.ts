@@ -11,7 +11,7 @@ const app = new Hono();
 
 app.use(logger());
 app.use(
-  "api/*",
+  "*",
   cors({
     origin: ["http://localhost:5173", "https://kiys.chianyung.dev"],
     allowHeaders: [
@@ -34,10 +34,10 @@ app.get("/", (c) => {
   });
 });
 
-app.route("/api/auth", auth);
-app.route("api/categories", categories);
-app.route("api/products", products);
-app.route("api/orders", orders);
+app.route("/auth", auth);
+app.route("/categories", categories);
+app.route("/products", products);
+app.route("/orders", orders);
 
 export default {
   port: process.env.APP_PORT || "3000",

@@ -5,6 +5,7 @@ import { cors } from "hono/cors";
 import auth from "./routes/auth";
 import categories from "./routes/categories";
 import products from "./routes/products";
+import orders from "./routes/orders";
 
 const app = new Hono();
 
@@ -36,6 +37,7 @@ app.get("/", (c) => {
 app.route("/api/auth", auth);
 app.route("api/categories", categories);
 app.route("api/products", products);
+app.route("api/orders", orders);
 
 export default {
   port: process.env.APP_PORT || "3000",

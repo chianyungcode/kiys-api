@@ -7,25 +7,25 @@ interface Category {
 
 export const categories = [
   {
-    id: "1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
+    id: "9c58a0e5-05da-45f2-b628-0da2918ed0d5",
     name: "Keyboard",
     slug: "keyboard",
     description: "Various types of keyboards",
   },
   {
-    id: "2b3c4d5e-6f7g-8h9i-0j1k-2l3m4n5o6p7q",
+    id: "e91daf70-8678-4172-bf08-def343184f48",
     name: "Mouse",
     slug: "mouse",
     description: "Different kinds of mice",
   },
   {
-    id: "3c4d5e6f-7g8h-9i0j-1k2l-3m4n5o6p7q8r",
+    id: "b6c227aa-d59c-451b-bc56-f00932eba9c1",
     name: "TWS",
     slug: "tws",
     description: "True Wireless Stereo earphones",
   },
   {
-    id: "4d5e6f7g-8h9i-0j1k-2l3m-4n5o6p7q8r9s",
+    id: "67714ea5-0a29-4c29-9fed-e19fbcedfff5",
     name: "Accessories",
     slug: "accessories",
     description: "Various computer accessories",

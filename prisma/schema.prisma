@@ -180,13 +180,12 @@ model Image {
 }
 
 model Order {
-  id         String   @id @default(uuid())
-  isPaid     Boolean  @default(false)
-  totalPrice Int
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(uuid())
+  isPaid    Boolean  @default(false)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   orderItems OrderItem[]
 

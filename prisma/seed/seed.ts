@@ -78,7 +78,7 @@ async function main() {
 
   // Seed orders
   for (const order of orders) {
-    const { id, isPaid, userId, totalPrice } = order;
+    const { id, isPaid, userId } = order;
 
     // Periksa apakah user ada
     const userExists = await prisma.user.findUnique({
@@ -98,7 +98,6 @@ async function main() {
           id,
           userId: userId,
           isPaid,
-          totalPrice,
         },
       });
       console.log(`Order berhasil dibuat:`, newOrder);

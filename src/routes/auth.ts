@@ -193,11 +193,13 @@ route.post("/refresh/token", async (c) => {
     }
 
     const newAccessToken = await generateAccessToken(user);
+    console.log(user.id);
 
     return c.json(
       successResponse({
         message: "Token refreshed successfully",
         data: {
+          userId: user.id,
           accessToken: newAccessToken,
           tokenType: "Bearer",
         },
@@ -214,5 +216,7 @@ route.post("/refresh/token", async (c) => {
     );
   }
 });
+
+route.get("/me");
 
 export default route;

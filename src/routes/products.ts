@@ -8,7 +8,6 @@ import { uploadWithR2 } from "../lib/cloudflare-r2";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 const route = new Hono();
-route.use(authMiddleware);
 
 // Create product
 route.post("/", zValidator("json", ProductValidation.create), async (c) => {

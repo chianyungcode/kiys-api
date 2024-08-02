@@ -5,8 +5,7 @@
     "start": "bun run src/index.ts",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
-    "db:generate": "bunx prisma generate",
-    "snaplet:sync": "bunx @snaplet/seed sync"
+    "db:generate": "bunx prisma generate"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.614.0",
@@ -18,8 +17,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@snaplet/copycat": "^5.0.0",
-    "@snaplet/seed": "0.97.20",
     "@types/bun": "latest",
     "prisma": "5.15.0",
     "tsx": "^4.16.2",
@@ -27,8 +24,5 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed/seed.ts"
-  },
-  "@snaplet/seed": {
-    "config": "prisma/seed/seed.config.ts"
   }
 }
